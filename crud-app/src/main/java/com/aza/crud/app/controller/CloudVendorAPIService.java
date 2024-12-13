@@ -35,7 +35,7 @@ public class CloudVendorAPIService {
 	}
 	
 	@PostMapping("/create")
-	public ResponseEntity<CloudVendor> createNewVendor(@RequestBody CloudVendor vendors){
+	public ResponseEntity<CloudVendor> createNewVendor(@RequestBody CloudVendor vendors) throws Exception{
 		CloudVendor createdCloudVendor= svc.createVendor(vendors);
 		
 		logInfo.info("successfully created new vendor: " + createdCloudVendor.toString());

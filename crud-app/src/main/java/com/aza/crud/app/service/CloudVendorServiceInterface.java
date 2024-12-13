@@ -9,7 +9,7 @@ import com.aza.crud.app.model.CloudVendor;
 
 public interface CloudVendorServiceInterface {
 
-	public CloudVendor createVendor(CloudVendor vendor);
+	public CloudVendor createVendor(CloudVendor vendor) throws Exception;
 	public void deleteVendor(long vendorId);
 	public CloudVendor updateVendor(long vendorId,  CloudVendor vendor);
 	public CloudVendor getVendor(long vendorId);

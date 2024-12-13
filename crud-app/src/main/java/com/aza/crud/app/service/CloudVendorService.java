@@ -13,8 +13,10 @@ import com.aza.crud.app.custom.exception.DBException;
 import com.aza.crud.app.custom.exception.EmptyInputException;
 import com.aza.crud.app.custom.exception.NullRecordException;
 import com.aza.crud.app.model.CloudVendor;
+import com.aza.crud.app.model.VendorAddress;
 import com.aza.crud.app.repository.CloudVendorRepositoryInterface;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -26,6 +28,9 @@ public class CloudVendorService implements CloudVendorServiceInterface {
 	@Autowired
 	private CloudVendorRepositoryInterface repo;
 
+	@Autowired
+	private VendorAddressServiceInterface addrService;
+	
 	@Override
 	public void deleteVendor(long vendorId) {
 		
@@ -117,7 +122,8 @@ public class CloudVendorService implements CloudVendorServiceInterface {
 	}
 
 	@Override
-	public CloudVendor createVendor(CloudVendor vendor) {
+	@Transactional
+	public CloudVendor createVendor(CloudVendor vendor) throws Exception {
 		
 		log.debug("vendor: " + vendor.toString());
 		if(vendor.getVendorName().isEmpty() || vendor.getVendorName().length()==0 ) {
@@ -126,7 +132,19 @@ public class CloudVendorService implements CloudVendorServiceInterface {
 		
 		try {
 			CloudVendor savedVendor = repo.save(vendor);
+			
+			if(savedVendor.getVendorName().contains("code")) {
+				throw new Exception();
+			}	
+			
+			VendorAddress addr = new VendorAddress();
+			addr.setId(1L);
+			addr.setLocation("Level 8, Wisma Standard Chartered, KL");
+			addr.setVendor(vendor);
+			addrService.createVendorAddress(addr);
+			
 			return savedVendor;
+			
 		} catch(IllegalArgumentException e) {
 			throw new NullRecordException("614", "vendor is null " + e.getMessage());
 		} catch (OptimisticLockingFailureException e) {
